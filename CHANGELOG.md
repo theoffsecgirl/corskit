@@ -10,7 +10,7 @@ All notable changes to **corskit** are documented here.
 - `corskit.py`: escáner CLI en Python (`corskit`, instalable con `pipx`). Envía cada `Origin` generado de verdad y prueba preflight `OPTIONS`. Opciones para bug bounty: `-H`, `-c`, `-x` (Burp), `-k`, `--rate`, `--threads`, `--min-severity`, salida `text|json|jsonl`, entrada por `-u`, `-l` o stdin.
 - Origins nuevos: sufijo sin punto (`attackerexample.com`, bypass de `endswith`) y `_` como carácter especial.
 - Tests (`pytest`) con backends simulados (reflejo total, allowlist exacta, regex con punto sin escapar, `startswith`, `endswith`, solo subdominios) y una prueba end-to-end contra un servidor HTTP local.
-- CI: ruff (fijado) + pytest en Python 3.9 y 3.12. `pyproject.toml` para instalación.
+- CI: ruff (fijado) + pytest en Python 3.11 y 3.13. `pyproject.toml` para instalación.
 
 ### Changed
 - **El HTML deja de usarse como escáner.** Los navegadores descartan la cabecera `Origin` (y `Access-Control-Request-*`) que se intenta fijar desde `fetch()`, así que los origins generados nunca llegaban al servidor y el auto-scan daba falsos negativos. La página queda como apoyo para la PoC, con un aviso explícito.
