@@ -4,8 +4,8 @@
 
 **CORS misconfiguration tester — offensive web tool**
 
-![Language](https://img.shields.io/badge/HTML%20%2F%20JS-Browser-9E4AFF?style=flat-square&logo=javascript&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.3.0-9E4AFF?style=flat-square)
+![Language](https://img.shields.io/badge/Python%20%2B%20HTML-CLI%20%2B%20Browser-9E4AFF?style=flat-square&logo=python&logoColor=white)
+![Version](https://img.shields.io/badge/version-2.0.0-9E4AFF?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-9E4AFF?style=flat-square)
 ![Category](https://img.shields.io/badge/Category-Bug%20Bounty%20%7C%20Pentesting-111111?style=flat-square)
 
@@ -19,45 +19,52 @@
 
 ## What does it do?
 
-Web tool (pure HTML + JavaScript, no dependencies) to detect CORS misconfigurations in web endpoints. Allows testing a single endpoint, running an automatic scan of pre-generated origins, and visualizing results with severity classification.
+Detects CORS misconfigurations in web endpoints. It has two parts:
+
+- **`corskit` (CLI, Python)** — the scanner. Sends each generated `Origin` for real, plus a preflight `OPTIONS`, and classifies what the server accepts.
+- **`cors_toolkit.html` (browser)** — PoC helper only. Browsers do not let a page set the `Origin` header (it is a forbidden header name): requests from the page always carry the page's real origin, so the HTML **cannot discover** misconfigurations. Use it to confirm exploitation from the origin the CLI reported.
 
 ---
 
-## Features
+## Features (CLI)
 
-- Manual test per individual origin
-- **Auto-scan**: tests all auto-generated origins at once
-- Misconfiguration detection with severity: `critical` / `high` / `info`
-- Generated origins: subdomains, wildcard TLD, bypass chars (`%60`, `..`), `null`, `data:`, `file://`
-- Configurable method: `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`
-- Export results as `corskit_{timestamp}.txt`
-- No external dependencies — open directly in browser
+- Origins generated per target: arbitrary, `null`, prefix (`startswith`), suffix (`endswith`), unescaped-dot regex bypass (`apiXexample.com`), special chars (`..`, `%60`, `_`), subdomains, case, non-standard port, `https`→`http` downgrade
+- Simple request + preflight `OPTIONS` (dangerous methods / sensitive headers allowed to the accepted origin)
+- Severity based on **who controls the accepted origin**: attacker-registrable → `critical`/`high`; org subdomain (needs XSS/takeover) → `medium`/`low`; same host → `low`/`info`. The target's own legitimate origin is never reported
+- Bug bounty ready: `-H` custom headers, `-c` cookies, `-x` proxy (Burp), `--rate` req/s limit, `--threads`
+- Input: `-u` (repeatable), `-l` file or stdin
+- Output: text, `--format json|jsonl`, `-o` file. Exit code `1` if any `high`/`critical`
+
+---
+
+## Installation
+
+```bash
+pipx install git+https://github.com/theoffsecgirl/corskit
+# or
+git clone https://github.com/theoffsecgirl/corskit.git && cd corskit && pip install -e .
+```
 
 ---
 
 ## Usage
 
-### Option 1 — Open directly
-
 ```bash
-git clone https://github.com/theoffsecgirl/corskit.git
-cd corskit
-open cors_toolkit.html   # macOS
-xdg-open cors_toolkit.html  # Linux
+corskit -u https://api.target.com/v1/me -c "session=..." -H "X-Bugbounty: myuser" --rate 5
+cat endpoints.txt | corskit --format jsonl -o cors.jsonl
+corskit -u https://api.target.com/v1/me -x http://127.0.0.1:8080 -k   # through Burp
 ```
 
-### Option 2 — Local server (avoids browser's own CORS restrictions)
+### PoC in the browser
 
-```bash
-python3 -m http.server 8080
-# Open: http://localhost:8080/cors_toolkit.html
-```
+Serve `cors_toolkit.html` **from the origin the CLI reported as accepted** and check that the authenticated response can be read.
 
 ---
 
-## Main file
+## Files
 
-`cors_toolkit.html` — single file, fully self-contained.
+- `corskit.py` — CLI scanner
+- `cors_toolkit.html` — self-contained browser PoC helper
 
 ---
 

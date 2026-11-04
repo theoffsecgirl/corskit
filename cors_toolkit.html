@@ -99,8 +99,18 @@
 
   <h1>corskit</h1>
   <div class="subtitle">
-    v1.3.0 · CORS misconfiguration auditor ·
+    v2.0.0 · CORS misconfiguration auditor ·
     by <a href="https://theoffsecgirl.com" style="color:var(--accent);text-decoration:none">theoffsecgirl</a>
+  </div>
+
+  <div class="section" style="border-left:3px solid #f0a500">
+    <strong>Limitacion del navegador:</strong> los navegadores no permiten fijar la cabecera
+    <code>Origin</code> (ni <code>Access-Control-Request-*</code>) desde <code>fetch()</code>.
+    Las peticiones de esta pagina salen siempre con el origin real de la pagina, no con el
+    seleccionado, asi que <strong>no sirve para descubrir misconfiguraciones</strong>.
+    Para escanear usa la CLI: <code>corskit -u https://target/api</code>.
+    Usa esta pagina para <strong>confirmar la PoC</strong>: sirvela desde el origin que la CLI
+    reporto como aceptado y comprueba que puedes leer la respuesta con credenciales.
   </div>
 
   <!-- Configuracion principal -->
