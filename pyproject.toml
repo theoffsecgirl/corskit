@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "corskit"
+version = "2.0.0"
+description = "CORS misconfiguration scanner (CLI) + browser PoC toolkit"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "theoffsecgirl", email = "info@theoffsecgirl.com" }]
+keywords = ["security", "bug-bounty", "cors", "pentesting", "web-security"]
+requires-python = ">=3.8"
+dependencies = ["requests>=2.28"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff==0.16.9"]
+
+[project.scripts]
+corskit = "corskit:main_entry"
+
+[project.urls]
+Homepage = "https://github.com/theoffsecgirl/corskit"
+Repository = "https://github.com/theoffsecgirl/corskit"
+"Bug Tracker" = "https://github.com/theoffsecgirl/corskit/issues"
+
+[tool.setuptools]
+py-modules = ["corskit"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
